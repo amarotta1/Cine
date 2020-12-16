@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendidas</title>
+</head>
+<body>
+    {% include "nav_bar.html" %}
+    <h1>Entradas vendidas de las peliculas activas</h1>
+
+    {% for peli, datos in vendidas %}
+    <hr>
+    <h3>{{peli}}</h3>
+
+        {% for i in datos %}
+            <p> <b>Proyeccion:</b>  {{i.proyeccion}} <br>
+                
+            {% if i.butacas %}
+            <b>Butacas vendidas: </b> 
+            <ul>
+            {% for j in i.butacas %}
+            <li>Fecha:{{j.fecha}} &nbsp Fila:{{j.fila}}  &nbsp Asiento:{{j.asiento}}</li> 
+            {% endfor %}
+            </ul>
+            </p>
+            {% else %}
+            <b>Butacas vendidas: </b>  Ninguna</p>
+
+            {% endif %}
+            
+        {% endfor %}
+    
+    {% endfor %}
+
+    
+</body>
+</html>

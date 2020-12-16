@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="{% static '/nav_bar.css' %}">
+</head>
+<body>
+    <nav>
+      <ul>
+        <li><a href="../">Home</a></li>
+        <li><a href="../peliculas">Peliculas</a></li>
+        <li><a href="../salas/">Salas</a>
+          <ul>
+            <li><a href="../buscarSala/">Buscar</a></li>
+            <li><a href="../crearSala/">Crear</a></li>
+            <li><a href="../editarSala/">Editar</a></li>
+            <li><a href="../eliminarSala">Eliminar</a></li>
+          </ul>
+        </li>
+        <li><a>Reportes</a>
+          <ul>
+            <li><a href="../ranking/">Ranking</a></li>
+            <li><a href="../vendidas/">Vendidas</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+</body>
+</html>

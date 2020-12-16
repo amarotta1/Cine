@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar Sala</title>
+</head>
+<body>
+    {% include "nav_bar.html" %}
+
+    <h1>Eliminar Sala</h1>
+    <form method="GET"> 
+        <input type="number" name="id_sala"> <!-- Ese name lo uso en las views para obtener el resultado -->
+        <input type="submit" value="Buscar"> 
+    </form>
+    <br>
+
+    {% if sala %}
+    <form method='POST'>
+        {% csrf_token %}
+
+        <h3>Desea eliminar el registro de la sala: {{sala.nombre}}</h3>
+        <p>ID: <input type="number" name="id_sala2" readonly value="{{sala.id_sala}}"></p>
+        <button type="submit" >Si,eliminar</button>
+        <a href="../salas/">Cancelar</a>
+        <a href="../editarSala/?id_sala={{sala.id_sala}}">Editar Estado</a>
+
+
+    </form>
+    {% endif %}
+    
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking</title>
+</head>
+<body>
+    {% include "nav_bar.html" %}
+    <h1>Ranking</h1>
+    <br>
+    <form method="GET">
+        <input type="date" name="f1" required> <!-- Ese name lo uso en las views para obtener el resultado -->
+        <input type="date" name="f2" required> 
+        <input type="submit" value="Buscar">    
+    </form>
+
+    {% if ranking %}
+        {% for proyeccion, datos in ranking %}        
+
+            <p> <b>{{proyeccion}}:</b> &nbsp {{datos}} <br> </p>
+                
+        <hr>
+
+        {% endfor %}
+
+    {% endif %}
+
+</body>
+</html>

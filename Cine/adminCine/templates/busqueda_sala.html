@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busqueda de Sala </title>
+</head>
+<body>
+    {% include "nav_bar.html" %}
+    <h1>Buscar Sala</h1>
+    <br>
+    <form action="/resultadoSala/" method="GET"> <!-- tambien debo crear el path de "resultadoSala" que es hacia donde ira -->
+        <input type="text" name="sala" required> <!-- Ese name lo uso en las views para obtener el resultado -->
+        <input type="submit" value="Buscar">    
+    </form>
+    
+</body>
+</html>

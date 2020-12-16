@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peliculas</title>
+</head>
+<body>
+    {% include "nav_bar.html" %}
+    <h1>Lista de peliculas</h1>
+    <h3>El dia de hoy es {{hoy}}</h3>
+   
+    <h3>Las peliculas disponibles son:</h3>
+   
+    <ul>
+        {% for pelicula in disponibles %}
+        <li>
+            <p> <b>Nombre:</b> {{pelicula.nombre}} <br> <b>Activo:</b> {{pelicula.estado}} <br> <b>Duracion: </b> {{pelicula.duracion}} <br>
+            <b>Detalle:</b> {{pelicula.detalle}}<br> <b>Genero</b> {{pelicula.genero}} <br> <b>Clasificacion:</b> {{pelicula.clasificacion}} <br>
+            <b>Comienzo:</b> {{pelicula.fechaComienzo}} <br> <b>Finalizacion:</b> {{pelicula.fechaFinalizacion}} <br>
+            </p>
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>
+</body>
+</html>

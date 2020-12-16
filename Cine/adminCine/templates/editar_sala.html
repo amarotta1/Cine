@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar sala</title>
+</head>
+<body>
+    {% include "nav_bar.html" %}
+    <h1>Editar sala</h1>
+
+    <form method="GET"> 
+        <input type="number" name="id_sala"> <!-- Ese name lo uso en las views para obtener el resultado -->
+        <input type="submit" value="Buscar"> 
+    </form>
+    <br>
+    
+    {% if formulario %}
+    
+    {% if formulario.errors %}
+    <p style="color: red">Revisar este campo</p>
+    {% endif %}
+
+    <form method="POST">{% csrf_token %}
+        <table>
+            {{formulario.as_table}}
+        </table>
+        <button type="submit">Guardar</button>
+
+    </form>
+    {% endif %}
+    
+</body>
+</html>

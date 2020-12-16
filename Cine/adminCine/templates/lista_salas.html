@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salas</title>
+</head>
+<body>
+    {% include "nav_bar.html" %}
+    <ul>
+        {% for sala in salas %}
+        <li>
+            <p>Nombre: {{sala.nombre}} <br> Activo: {{sala.activo}} <br> Filas: {{sala.filas}} <br>
+            Asientos: {{sala.asientos}}
+            </p>
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>
+</body>
+</html>
