@@ -13,7 +13,7 @@ from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
 
-from adminCine.cine_serializer import SalaSerializer ,ProyeccionSerializer, ButacaSerializer
+from adminCine.cine_serializer import SalaSerializer ,ProyeccionSerializer, ButacaSerializer, PeliculaSerializer
 
 
 #El proyecto tiene 2 partes, la primera corresponde a lo pedido en el practico, retornando los objetos JSON solicitados
@@ -63,39 +63,20 @@ def pelicula_serializer(request,id_pelicula,f1,f2):
 #Ejemplo: http://localhost:8000/peliculasSerial/100/pasado
 @api_view(['GET']) 
 def listar_peliculas_serial(request,rango,tiempo):
-    
     fecha_actual = datetime.now().date()
-    peliculas = Pelicula.objects.all()
-    peliculas_disponibles = []
-    
-    if tiempo =="pasado":  #como voy para atras tengo en cuenta la fecha de finalizacion
-        fecha = fecha_actual - timedelta(days=rango)
-        
-        for pelicula in peliculas:
-            if (pelicula.fechaFinalizacion > fecha) and (pelicula.fechaComienzo < fecha_actual):
-                peliculas_disponibles.append(pelicula)
-    
+
+    if tiempo == 'pasado': #como voy para atras tengo en cuenta la fecha de finalizacion
+        fecha = fecha_actual - timedelta(days=rango) 
+        peliculas_disponible = Pelicula.objects.filter(fechaFinalizacion__gte= fecha,fechaComienzo__lte=fecha_actual)        
+
+        return JsonResponse(PeliculaSerializer(peliculas_disponible, many=True).data, safe=False, status=status.HTTP_200_OK)
+
     elif tiempo == "futuro":#como voy para adelante tengo en cuenta la fecha de comienzo
-        fecha = fecha_actual + timedelta(days=rango)
-        
-        for pelicula in peliculas: 
-            if (pelicula.fechaComienzo <= fecha) and (pelicula.fechaFinalizacion >= fecha_actual):
-                peliculas_disponibles.append(pelicula)
-    
-    elif tiempo == "presente":
-        for pelicula in peliculas: 
-            if (pelicula.fechaComienzo <= fecha_actual) and (pelicula.fechaFinalizacion >= fecha_actual):
-                peliculas_disponibles.append(pelicula)
-    
-    lista = []
-    
-    for pelicula in peliculas_disponibles:
-        pelicula_json = json.loads(serializers.serialize('json',(pelicula,)))            
-        lista.append(pelicula_json)
-              
-    peliculas_json = json.dumps(lista)    
-    return HttpResponse(peliculas_json,content_type = 'aplication/json')  
-        
+        fecha = fecha_actual + timedelta(days=rango) 
+        peliculas_disponible = Pelicula.objects.filter(fechaFinalizacion__gte= fecha_actual,fechaComienzo__lte=fecha)        
+
+        return JsonResponse(PeliculaSerializer(peliculas_disponible, many=True).data, safe=False, status=status.HTTP_200_OK)
+
       
 #ENDPOINT SALA
 
@@ -103,19 +84,12 @@ def listar_peliculas_serial(request,rango,tiempo):
 #http://localhost:8000/salasSerial/
 @api_view(['GET', 'POST'])
 def salas_serial(request):
-    if request.method == "GET":
-        salas = Sala.objects.all()
-        lista = []
-        for sala in salas:
-            sala_json = json.loads(serializers.serialize('json',(sala,)))
-            lista.append(sala_json)
-        salas_json = json.dumps(lista)
-        return HttpResponse(salas_json,content_type = 'aplication/json')  
+    if request.method == "GET":     
+        return JsonResponse(SalaSerializer(Sala.objects.all(),many = True).data,safe = False,status = status.HTTP_200_OK) 
 
     elif request.method == 'POST':
-        sala_data = JSONParser().parse(request)
         #Responde al modelo que cree
-        sala_serializer = SalaSerializer(data=sala_data)
+        sala_serializer = SalaSerializer(data=JSONParser().parse(request))
 
         if sala_serializer.is_valid():
             sala_serializer.save()
@@ -132,8 +106,7 @@ def sala_serial(request,id_sala):
         return JsonResponse({'message': 'La sala no existe'}, status=status.HTTP_404_NOT_FOUND) 
 
     if request.method == 'GET': 
-        sala_serializer = SalaSerializer(sala) 
-        return JsonResponse(sala_serializer.data)
+        return JsonResponse(SalaSerializer(sala) .data)
 
     elif request.method == 'PUT': #tengo que enviar toda la informacion para que lo valide
         sala_data = JSONParser().parse(request) 
@@ -184,16 +157,11 @@ def proyecciones_serial(request):
 #http://localhost:8000/proyeccionesSerial/2020-10-08
 @api_view(['GET'])
 def proyecciones_dia_serial(request,dia):
-    
-    proy = Proyeccion.objects.all()
-    lista = []
     dia = datetime.strptime(dia, '%Y-%m-%d').date()
-    for p in proy:
-        if dia >= p.fechaInicio and dia <= p.fechaFin and p.estado == True:
-            proy_json = ProyeccionSerializer(p)            
-            lista.append(proy_json.data)
-    proyecciones_json = json.dumps(lista)
-    return HttpResponse(proyecciones_json,content_type = 'aplication/json')  
+    proyecciones = Proyeccion.objects.filter(fechaInicio__lte=dia,fechaFin__gte=dia,estado=True)
+
+    return JsonResponse(ProyeccionSerializer(proyecciones, many=True).data, safe=False, status=status.HTTP_200_OK)
+     
 
 #http://localhost:8000/proyeccionesSerial/actualizar/8
 @api_view(['PUT'])  
@@ -255,13 +223,7 @@ def proyeccion_info_serial(request,fecha,id_pelicula):
 @api_view(['GET', 'POST'])
 def butacas_serial(request):
     if request.method == "GET":
-        butacas = Butaca.objects.all()
-        lista = []
-        for b in butacas:
-            butaca_json = json.loads(serializers.serialize('json',(b,)))            
-            lista.append(butaca_json)
-        butacas_json = json.dumps(lista)
-        return HttpResponse(butacas_json,content_type = 'aplication/json')
+        return JsonResponse(ButacaSerializer(Butaca.objects.all(),many = True).data,safe = False,status = status.HTTP_200_OK) 
     
     elif request.method == 'POST':
         butaca_data = JSONParser().parse(request)
@@ -312,8 +274,7 @@ def butaca_serial(request,id_butaca):
         return JsonResponse({'message': 'La butaca no existe'}, status=status.HTTP_404_NOT_FOUND) 
 
     if request.method == 'GET': 
-        butaca_serializer = ButacaSerializer(butaca) 
-        return JsonResponse(butaca_serializer.data)
+        return JsonResponse(ButacaSerializer(butaca).data)
     if request.method == 'PUT': 
         butaca_data = JSONParser().parse(request) 
         butaca_serializer = ButacaSerializer(butaca, data=butaca_data) 
@@ -330,38 +291,18 @@ def reporte_butacas(request,f1,f2):
     f1 = datetime.strptime(f1, '%Y-%m-%d').date()
     f2 = datetime.strptime(f2, '%Y-%m-%d').date()
 
-    butacas = Butaca.objects.all()
+    return JsonResponse(ButacaSerializer(Butaca.objects.filter(fecha__gte=f1,fecha__lte=f2),many = True).data,safe = False,status = status.HTTP_200_OK) 
 
-    vendidas = []
-
-    for b in butacas:
-        if b.fecha >= f1 and b.fecha <= f2:
-            but = ButacaSerializer(b)
-            vendidas.append(but.data)
-    
-    lista = json.dumps(vendidas)
-
-    return HttpResponse(lista,content_type = 'aplication/json')
 
 #butacas vendidas en un rango de tiempo de una proyeccion en particular
 #localhost:8000/reportes/butacas/2000-01-01/2020-10-08/4
 @api_view(['GET'])
 def reporte_butacas_proyeccion(request,f1,f2,id_proyeccion):
     f1 = datetime.strptime(f1, '%Y-%m-%d').date()
-    f2 = datetime.strptime(f2, '%Y-%m-%d').date()
+    f2 = datetime.strptime(f2, '%Y-%m-%d').date()  
 
-    butacas = Butaca.objects.all()
-
-    vendidas = []
-
-    for b in butacas:
-        if b.fecha >= f1 and b.fecha <= f2 and b.proyeccion == id_proyeccion:
-            but = ButacaSerializer(b)
-            vendidas.append(but.data)
-    
-    lista = json.dumps(vendidas)
-
-    return HttpResponse(lista,content_type = 'aplication/json')
+   
+    return JsonResponse(ButacaSerializer(Butaca.objects.filter(fecha__gte=f1,fecha__lte=f2,proyeccion=id_proyeccion),many = True).data,safe = False,status = status.HTTP_200_OK) 
 
 #Ranking de las 5 peliculas mas vendidas en un rango de tiempo
 #localhost:8000/reportes/ranking/2000-01-01/2020-12-31/
@@ -370,16 +311,15 @@ def reporte_ranking(request,f1,f2):
     f1 = datetime.strptime(f1, '%Y-%m-%d').date()
     f2 = datetime.strptime(f2, '%Y-%m-%d').date()
 
-    butacas = Butaca.objects.all()
+    butacas = Butaca.objects.filter(fecha__gte=f1,fecha__lte=f2)
     vendidas = {}
 
-    for b in butacas:
-        if b.fecha >= f1 and b.fecha <= f2:
-            #si existe que le agrege 1, sino que le ponga un 1
-            if b.proyeccion in vendidas:
-                vendidas[b.proyeccion] += 1
-            else:
-                vendidas[b.proyeccion] = 1
+    for b in butacas:        
+        #si existe que le agrege 1, sino que le ponga un 1
+        if b.proyeccion in vendidas:
+            vendidas[b.proyeccion] += 1
+        else:
+            vendidas[b.proyeccion] = 1
 
     #las ordeno de mayor a menor, me devuelve una lista de tuplas
     vendidas = sorted(vendidas.items(), key=operator.itemgetter(1), reverse=True)
@@ -595,14 +535,5 @@ def vendidas_peliculas(request):
     print(detalle)
 
     return render(request,"vendidas.html",{'vendidas': detalle.items()})  
-
-    
-    
-
-    
-
-#ADMINISTRAR PROYECCIONES 
-
-#ADMINISTRAR BUTACAS 
 
         

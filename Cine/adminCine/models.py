@@ -15,8 +15,8 @@ class Pelicula(models.Model):
    id_pelicula = models.AutoField(primary_key=True) 
    nombre = models.CharField(max_length=60,blank=False,null=False) #La mas larga que se me ocurrio tenia 50
    duracion = models.IntegerField(blank=False,null=False)
-   descripcion = models.CharField(max_length=160,blank=False,null=False)
-   detalle = models.CharField(max_length=500,blank=False,null=False)
+   descripcion = models.CharField(max_length=10000,blank=False,null=False)
+   detalle = models.CharField(max_length=10000,blank=False,null=False)
    genero = models.CharField(max_length=30,blank=False,null=False)
    clasificacion = models.CharField(max_length=30,blank=False,null=False)
    estado = models.BooleanField(default=False)

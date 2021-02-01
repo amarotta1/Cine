@@ -1,7 +1,23 @@
 from rest_framework import serializers
-from adminCine.models import Sala , Proyeccion , Butaca
+from adminCine.models import Sala , Proyeccion , Butaca, Pelicula
  
  
+
+class PeliculaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pelicula
+        fields = ('id_pelicula',
+                  'nombre',
+                  'duracion',
+                  'descripcion',
+                  'detalle',
+                  'genero',
+                  'clasificacion',
+                  'estado',
+                  'fechaComienzo',
+                  'fechaFinalizacion')
+
+
 class SalaSerializer(serializers.ModelSerializer):
  
     class Meta:
